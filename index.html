@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingenio Académico: Clases, Tesis y Asesorías</title>
+    <style>
+        :root {
+            --color-primario: #2C3E50;
+            --color-secundario: #3498DB;
+            --color-acento: #27AE60;
+            --color-texto: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        /* Encabezado */
+        .header {
+            background: var(--color-primario);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Navegación */
+        .nav {
+            background: var(--color-secundario);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(44,62,80,0.9), rgba(44,62,80,0.9)),
+                        url('https://images.unsplash.com/photo-1580894732444-8ecded7900cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+        }
+
+        /* Servicios */
+        .servicios {
+            padding: 4rem 2rem;
+            background: #f9f9f9;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Galería */
+        .galeria {
+            padding: 4rem 2rem;
+        }
+
+        .grid-imagenes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .img-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .img-responsive {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .img-overlay {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        /* Formulario */
+        .formulario-contacto {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-primario);
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--color-secundario);
+            outline: none;
+        }
+
+        .btn-enviar {
+            background: var(--color-acento);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .btn-enviar:hover {
+            background: #219a52;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a252f;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        /* Elementos Especiales */
+        .cta-banner {
+            background: var(--color-secundario);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 2rem auto;
+            border-radius: 10px;
+            max-width: 800px;
+        }
+
+        .testimonio-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Ingenio Académico</h1>
+        <p>Clases Particulares - Asesorías de Tesis - Soporte Académico</p>
+    </header>
+
+    <nav class="nav">
+        <a href="#servicios">Servicios</a>
+        <a href="#galeria">Galería</a>
+        <a href="#testimonios">Testimonios</a>
+        <a href="#contacto">Contacto</a>
+    </nav>
+
+    <section class="hero">
+        <div class="cta-banner">
+            <h2>¡Tu éxito académico comienza aquí!</h2>
+            <p style="margin: 1.5rem 0;">Primera sesión gratuita para nuevos estudiantes</p>
+            <a href="#contacto" class="btn-enviar">¡Quiero empezar!</a>
+        </div>
+    </section>
+
+    <section class="servicios" id="servicios">
+        <h2 style="text-align: center; margin-bottom: 3rem;">Nuestros Servicios</h2>
+        <div class="grid-container">
+            <div class="card">
+                <div class="img-card">
+                    <img src="https://images.unsplash.com/photo-1580894742597-87bc8789db3d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
+                         alt="Clases personalizadas" 
+                         class="img-responsive">
+                    <div class="img-overlay">Clases 1:1</div>
+                </div>
+                <h3 style="margin: 1rem 0;">📚 Tutorías Personalizadas</h3>
+                <ul>
+                    <li>Cálculo diferencial e integral</li>
+                    <li>Física universitaria</li>
+                    <li>Estadística avanzada</li>
+                    <li>Geometría analítica</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="img-card">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
+                         alt="Proyectos académicos" 
+                         class="img-responsive">
+                    <div class="img-overlay">Investigación</div>
+                </div>
+                <h3 style="margin: 1rem 0;">📝 Proyectos Académicos</h3>
+                <ul>
+                    <li>Asesoría de tesis</li>
+                    <li>Preparación de exámenes</li>
+                    <li>Artículos científicos</li>
+                    <li>Trabajos de grado</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="img-card">
+                    <img src="https://images.unsplash.com/photo-1580894742930-0b259e1c7d2e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
+                         alt="Soporte integral" 
+                         class="img-responsive">
+                    <div class="img-overlay">Soporte 24/7</div>
+                </div>
+                <h3 style="margin: 1rem 0;">🚀 Soporte Integral</h3>
+                <ul>
+                    <li>Resolución de ejercicios</li>
+                    <li>Corrección de trabajos</li>
+                    <li>Preparación de presentaciones</li>
+                    <li>Mentoría continua</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="galeria" id="galeria">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Nuestro Impacto</h2>
+        <div class="grid-imagenes">
+            <div class="img-card">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd594?ixlib=rb-1.2.1&auto=format&fit=crop&w=1951&q=80" 
+                     alt="Equipo académico" 
+                     class="img-responsive">
+                <div class="img-overlay">Equipo Calificado</div>
+            </div>
+            
+            <div class="img-card">
+                <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1953&q=80" 
+                     alt="Recursos educativos" 
+                     class="img-responsive">
+                <div class="img-overlay">Recursos Exclusivos</div>
+            </div>
+            
+            <div class="img-card">
+                <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1566&q=80" 
+                     alt="Estudiantes exitosos" 
+                     class="img-responsive">
+                <div class="img-overlay">Éxito Estudiantil</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="servicios" id="testimonios" style="background: #f8f9fa;">
+        <h2 style="text-align: center; margin-bottom: 3rem;">Testimonios</h2>
+        <div class="grid-container">
+            <div class="testimonio-card">
+                <p style="font-style: italic;">"Gracias a su apoyo completé mi tesis doctoral en tiempo récord. ¡Profesionales excepcionales!"</p>
+                <p style="margin-top: 1rem; font-weight: bold;">- Dra. Laura M. (Ingeniería Química)</p>
+            </div>
+            
+            <div class="testimonio-card">
+                <p style="font-style: italic;">"Las clases de cálculo fueron fundamentales para aprobar mi semestre. ¡100% recomendados!"</p>
+                <p style="margin-top: 1rem; font-weight: bold;">- Carlos R. (Estudiante de Ingeniería)</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" style="padding: 4rem 2rem;">
+        <h2 style="text-align: center; margin-bottom: 2rem;">📬 Contáctanos</h2>
+        <div class="formulario-contacto">
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre completo:</label>
+                    <input type="text" id="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo electrónico:</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="servicio">Servicio de interés:</label>
+                    <select id="servicio" required>
+                        <option value="">Seleccione un servicio</option>
+                        <option value="clases">Clases particulares</option>
+                        <option value="tesis">Asesoría de tesis</option>
+                        <option value="proyectos">Proyectos académicos</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mensaje">Mensaje:</label>
+                    <textarea id="mensaje" rows="5" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn-enviar">Enviar solicitud</button>
+            </form>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <p>📞 +58 412-6685237</p>
+            <p>📧 daniel_pineda_m@hotmail.com</p>
+            <p style="margin-top: 1rem;">🏢 Pichincha 1901 piso 11Dto.A, CARA</p>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2024 Ingenio Académico - Todos los derechos reservados</p>
+        <p style="margin-top: 1rem;">Transformando la educación desde 2020</p>
+    </footer>
+
+    <script>
+        // Validación de formulario
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            
+            if(nombre.trim() === '' || email.trim() === '') {
+                alert('Por favor complete todos los campos requeridos');
+                return;
+            }
+            
+            alert('Solicitud enviada con éxito. Nos contactaremos en menos de 24 horas.');
+            this.reset();
+        });
+
+        // Efecto hover para imágenes
+        document.querySelectorAll('.img-card').forEach(card => {
+            card.addEventListener('mouseover', () => {
+                card.querySelector('img').style.transform = 'scale(1.05)';
+            });
+            
+            card.addEventListener('mouseout', () => {
+                card.querySelector('img').style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
