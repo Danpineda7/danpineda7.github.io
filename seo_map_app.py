@@ -3,8 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
 
-# Initialize OpenAI client
-client = OpenAI(api_key="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")
+# Load API key securely from Streamlit Secrets
+openai_api_key = st.secrets["OPENAI_API_KEY"]
+client = OpenAI(api_key=openai_api_key)
 
 # Streamlit UI setup
 st.set_page_config(page_title="AI SEO Chat", layout="wide")
