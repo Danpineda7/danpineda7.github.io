@@ -1,11 +1,16 @@
 import streamlit as st
+import os
 import requests
 from bs4 import BeautifulSoup
 from openai import OpenAI
 
-# Load API key securely from Streamlit Secrets
-openai_api_key = st.secrets["OPENAI_API_KEY"]
-client = OpenAI(api_key=openai_api_key)
+# Load API key from environment variables
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+if not openai_api_key:
+    st.error("⚠️ OpenAI API key is missing! Please add it in Streamlit Secrets.")
+else:
+    client = OpenAI(api_key=openai_api_key)
 
 # Streamlit UI setup
 st.set_page_config(page_title="AI SEO Chat", layout="wide")
