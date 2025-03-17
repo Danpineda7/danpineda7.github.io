@@ -4,10 +4,9 @@ import requests
 import json
 from bs4 import BeautifulSoup
 import networkx as nx
-from pyvis.network import Network
+import matplotlib.pyplot as plt
 from fpdf import FPDF
 import tempfile
-from jinja2 import Template  # Import Jinja2 to fix Pyvis missing template issue
 
 # Set OpenAI API Key
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -84,33 +83,28 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
         st.error(f"❌ Error parsing AI response: {e}")
         return {"Main Topic": main_keyword, "Subtopics": {}}
 
-# Function to Create Interactive SEO Topical Map
-def create_interactive_graph(topical_map):
-    """Creates an interactive SEO topical map visualization using Pyvis."""
+# Function to Create and Display SEO Topical Map
+def display_graph(topical_map):
+    """Displays an SEO topical map using Matplotlib inside the Streamlit app."""
     if not topical_map or "Subtopics" not in topical_map or not topical_map["Subtopics"]:
         st.error("❌ No valid subtopics available. Try again.")
-        return None
+        return
     
     G = nx.DiGraph()
-    net = Network(height="600px", width="100%", bgcolor="#222222", font_color="white")
-    
     main_topic = topical_map["Main Topic"]
-    G.add_node(main_topic, size=30, color="#FF5733")
+    G.add_node(main_topic)
     
     for subtopic, keywords in topical_map["Subtopics"].items():
-        G.add_node(subtopic, size=20, color="#33FF57")
+        G.add_node(subtopic)
         G.add_edge(main_topic, subtopic)
         for keyword in keywords:
-            G.add_node(keyword, size=10, color="#338FFF")
+            G.add_node(keyword)
             G.add_edge(subtopic, keyword)
     
-    net.from_nx(G)
-    
-    # ✅ Fix for missing template issue in Pyvis
-    if net.template is None:
-        net.template = Template("<html><head></head><body><div id='mynetwork'></div></body></html>")
-    
-    return net
+    plt.figure(figsize=(10, 6))
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=3000, font_size=10)
+    st.pyplot(plt)
 
 # Run if User Clicks 'Generate SEO Strategy'
 if st.button("🚀 Generate SEO Strategy"):
@@ -118,14 +112,9 @@ if st.button("🚀 Generate SEO Strategy"):
         website_topics = extract_topics(website_url)
         topical_map = generate_topical_map(website_topics, competitor_url, main_keyword, selected_objectives)
         if topical_map and topical_map["Subtopics"]:
-            net = create_interactive_graph(topical_map)
-            if net:
-                st.success("✅ SEO Strategy Generated!")
-                st.subheader("📊 Interactive SEO Topical Map:")
-                net.write_html("topical_map.html")  # ✅ Use write_html() instead of show()
-                st.markdown("[📊 Click here to view the SEO Topical Map](topical_map.html)")
-            else:
-                st.error("❌ Failed to generate SEO topical map.")
+            st.success("✅ SEO Strategy Generated!")
+            st.subheader("📊 Interactive SEO Topical Map:")
+            display_graph(topical_map)  # Display the graph directly in Streamlit
         else:
             st.error("❌ Failed to generate SEO strategy. Please try again.")
     else:
