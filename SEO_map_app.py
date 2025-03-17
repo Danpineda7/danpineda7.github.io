@@ -54,26 +54,36 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
     Competitor URL: {competitor_url}
     Main Keyword: {main_keyword}
     SEO Objectives: {objectives}
+    
     Generate a structured SEO topical map with:
     - A main topic
     - 4-6 subtopics
     - 3-5 keywords per subtopic
     - Internal linking recommendations
+    - A brief content strategy for each subtopic
 
-    Ensure the JSON response follows this format:
+    Return a JSON response like this:
     {{
         "Main Topic": "{main_keyword}",
         "Subtopics": {{
-            "Subtopic 1": ["Keyword 1", "Keyword 2"],
-            "Subtopic 2": ["Keyword 3", "Keyword 4"]
+            "Subtopic 1": {{
+                "keywords": ["Keyword 1", "Keyword 2"],
+                "content": "Brief content strategy for this subtopic."
+            }},
+            "Subtopic 2": {{
+                "keywords": ["Keyword 3", "Keyword 4"],
+                "content": "Another content strategy suggestion."
+            }}
         }}
     }}
     """
+    
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
+
     try:
         topics_data = json.loads(response.choices[0].message.content)
         if "Main Topic" not in topics_data or "Subtopics" not in topics_data:
@@ -94,10 +104,10 @@ def display_graph(topical_map):
     main_topic = topical_map["Main Topic"]
     G.add_node(main_topic)
     
-    for subtopic, keywords in topical_map["Subtopics"].items():
+    for subtopic, data in topical_map["Subtopics"].items():
         G.add_node(subtopic)
         G.add_edge(main_topic, subtopic)
-        for keyword in keywords:
+        for keyword in data["keywords"]:
             G.add_node(keyword)
             G.add_edge(subtopic, keyword)
     
@@ -105,6 +115,46 @@ def display_graph(topical_map):
     pos = nx.spring_layout(G)
     nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=3000, font_size=10)
     st.pyplot(plt)
+
+# Function to Generate and Display the Content Strategy
+def display_content_strategy(topical_map):
+    """Displays the AI-generated content strategy for each subtopic."""
+    st.subheader("📄 SEO Content Strategy:")
+    for subtopic, data in topical_map["Subtopics"].items():
+        st.markdown(f"### 🔹 {subtopic}")
+        st.write(f"**Keywords:** {', '.join(data['keywords'])}")
+        st.write(f"**Content Strategy:** {data['content']}")
+        st.markdown("---")
+
+# Function to Generate PDF of Content Strategy
+def generate_pdf(topical_map):
+    """Creates a downloadable PDF with the SEO content strategy."""
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", style='B', size=16)
+    pdf.cell(200, 10, "SEO Content Strategy Document", ln=True, align='C')
+    
+    pdf.set_font("Arial", size=12)
+    pdf.ln(10)
+    pdf.cell(200, 10, f"Main Keyword: {topical_map['Main Topic']}", ln=True)
+    
+    pdf.ln(10)
+    pdf.set_font("Arial", style='B', size=14)
+    pdf.cell(200, 10, "Content Strategy", ln=True)
+    
+    pdf.set_font("Arial", size=12)
+    for subtopic, data in topical_map["Subtopics"].items():
+        pdf.ln(5)
+        pdf.set_font("Arial", style='B', size=12)
+        pdf.cell(200, 10, f"{subtopic}", ln=True)
+        pdf.set_font("Arial", size=11)
+        pdf.multi_cell(0, 8, f"Keywords: {', '.join(data['keywords'])}")
+        pdf.multi_cell(0, 8, f"Content Strategy: {data['content']}")
+    
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    pdf.output(temp_file.name)
+    return temp_file.name
 
 # Run if User Clicks 'Generate SEO Strategy'
 if st.button("🚀 Generate SEO Strategy"):
@@ -114,7 +164,12 @@ if st.button("🚀 Generate SEO Strategy"):
         if topical_map and topical_map["Subtopics"]:
             st.success("✅ SEO Strategy Generated!")
             st.subheader("📊 Interactive SEO Topical Map:")
-            display_graph(topical_map)  # Display the graph directly in Streamlit
+            display_graph(topical_map)
+            display_content_strategy(topical_map)
+
+            pdf_file = generate_pdf(topical_map)
+            st.download_button("📥 Download SEO Strategy PDF", open(pdf_file, "rb"), "SEO_Strategy.pdf", "application/pdf")
+
         else:
             st.error("❌ Failed to generate SEO strategy. Please try again.")
     else:
