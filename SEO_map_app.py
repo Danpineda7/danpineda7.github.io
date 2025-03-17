@@ -7,6 +7,7 @@ import networkx as nx
 from pyvis.network import Network
 from fpdf import FPDF
 import tempfile
+from jinja2 import Template  # Import Jinja2 to fix Pyvis missing template issue
 
 # Set OpenAI API Key
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -104,6 +105,11 @@ def create_interactive_graph(topical_map):
             G.add_edge(subtopic, keyword)
     
     net.from_nx(G)
+    
+    # ✅ Fix for missing template issue in Pyvis
+    if net.template is None:
+        net.template = Template("<html><head></head><body><div id='mynetwork'></div></body></html>")
+    
     return net
 
 # Run if User Clicks 'Generate SEO Strategy'
@@ -116,8 +122,8 @@ if st.button("🚀 Generate SEO Strategy"):
             if net:
                 st.success("✅ SEO Strategy Generated!")
                 st.subheader("📊 Interactive SEO Topical Map:")
-                net.show("topical_map.html")
-                st.markdown("[Click here to view the SEO Topical Map](topical_map.html)")
+                net.write_html("topical_map.html")  # ✅ Use write_html() instead of show()
+                st.markdown("[📊 Click here to view the SEO Topical Map](topical_map.html)")
             else:
                 st.error("❌ Failed to generate SEO topical map.")
         else:
