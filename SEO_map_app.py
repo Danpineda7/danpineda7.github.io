@@ -62,11 +62,22 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
-    return json.loads(response.choices[0].message.content)
+    try:
+        topics_data = json.loads(response.choices[0].message.content)
+        if "Main Topic" not in topics_data or "Subtopics" not in topics_data:
+            raise ValueError("Invalid API response format")
+        return topics_data
+    except (json.JSONDecodeError, ValueError) as e:
+        st.error(f"❌ Error parsing AI response: {e}")
+        return None
 
 # Function to Create Interactive SEO Topical Map
 def create_interactive_graph(topical_map):
     """Creates an interactive SEO topical map visualization using Pyvis."""
+    if not topical_map or "Subtopics" not in topical_map:
+        st.error("❌ No valid topical map data available.")
+        return None
+    
     G = nx.DiGraph()
     net = Network(height="600px", width="100%", bgcolor="#222222", font_color="white")
     
@@ -119,14 +130,17 @@ if st.button("🚀 Generate SEO Strategy"):
     if website_url and main_keyword and competitor_url and selected_objectives:
         website_topics = extract_topics(website_url)
         topical_map = generate_topical_map(website_topics, competitor_url, main_keyword, selected_objectives)
-        net = create_interactive_graph(topical_map)
-        pdf_file = generate_pdf(topical_map, website_url, main_keyword, selected_objectives)
-        
-        st.success("✅ SEO Strategy Generated!")
-        st.subheader("📊 Interactive SEO Topical Map:")
-        net.show("topical_map.html")
-        st.markdown("[Click here to view the SEO Topical Map](topical_map.html)")
-        
-        st.download_button("📥 Download SEO Strategy PDF", open(pdf_file, "rb"), "SEO_Strategy.pdf", "application/pdf")
+        if topical_map:
+            net = create_interactive_graph(topical_map)
+            pdf_file = generate_pdf(topical_map, website_url, main_keyword, selected_objectives)
+            
+            st.success("✅ SEO Strategy Generated!")
+            st.subheader("📊 Interactive SEO Topical Map:")
+            net.show("topical_map.html")
+            st.markdown("[Click here to view the SEO Topical Map](topical_map.html)")
+            
+            st.download_button("📥 Download SEO Strategy PDF", open(pdf_file, "rb"), "SEO_Strategy.pdf", "application/pdf")
+        else:
+            st.error("❌ Failed to generate SEO strategy. Please try again.")
     else:
         st.error("❌ Please fill in all required fields!")
