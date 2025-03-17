@@ -9,7 +9,7 @@ from fpdf import FPDF
 import tempfile
 
 # Set OpenAI API Key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Streamlit UI Title
 st.title("🚀 AI-Powered SEO Topical Map & Content Strategy Generator")
