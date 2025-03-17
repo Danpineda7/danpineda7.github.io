@@ -39,12 +39,12 @@ def extract_topics(url):
     try:
         response = requests.get(url, timeout=10)
         if response.status_code != 200:
-            return None
+            return []
         soup = BeautifulSoup(response.text, "html.parser")
         topics = [heading.get_text(strip=True) for heading in soup.find_all(["h1", "h2", "h3"])]
         return list(set(topics))
     except Exception as e:
-        return None
+        return []
 
 # Function to Generate SEO Topical Map
 def generate_topical_map(website_topics, competitor_url, main_keyword, objectives):
@@ -54,8 +54,20 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
     Competitor URL: {competitor_url}
     Main Keyword: {main_keyword}
     SEO Objectives: {objectives}
-    Generate a structured SEO topical map with a main topic, subtopics, and internal linking recommendations.
-    Return JSON format.
+    Generate a structured SEO topical map with:
+    - A main topic
+    - 4-6 subtopics
+    - 3-5 keywords per subtopic
+    - Internal linking recommendations
+
+    Ensure the JSON response follows this format:
+    {{
+        "Main Topic": "{main_keyword}",
+        "Subtopics": {{
+            "Subtopic 1": ["Keyword 1", "Keyword 2"],
+            "Subtopic 2": ["Keyword 3", "Keyword 4"]
+        }}
+    }}
     """
     response = client.chat.completions.create(
         model="gpt-4",
@@ -69,13 +81,13 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
         return topics_data
     except (json.JSONDecodeError, ValueError) as e:
         st.error(f"❌ Error parsing AI response: {e}")
-        return None
+        return {"Main Topic": main_keyword, "Subtopics": {}}
 
 # Function to Create Interactive SEO Topical Map
 def create_interactive_graph(topical_map):
     """Creates an interactive SEO topical map visualization using Pyvis."""
-    if not topical_map or "Subtopics" not in topical_map:
-        st.error("❌ No valid topical map data available.")
+    if not topical_map or "Subtopics" not in topical_map or not topical_map["Subtopics"]:
+        st.error("❌ No valid subtopics available. Try again.")
         return None
     
     G = nx.DiGraph()
@@ -94,52 +106,20 @@ def create_interactive_graph(topical_map):
     net.from_nx(G)
     return net
 
-# Function to Generate PDF SEO Strategy
-def generate_pdf(topical_map, website_url, main_keyword, objectives):
-    """Creates a downloadable PDF with the SEO content strategy."""
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", style='B', size=16)
-    pdf.cell(200, 10, "SEO Content Strategy Document", ln=True, align='C')
-    
-    pdf.set_font("Arial", size=12)
-    pdf.ln(10)
-    pdf.cell(200, 10, f"Website: {website_url}", ln=True)
-    pdf.cell(200, 10, f"Main Keyword: {main_keyword}", ln=True)
-    pdf.cell(200, 10, f"SEO Objectives: {', '.join(objectives)}", ln=True)
-    
-    pdf.ln(10)
-    pdf.set_font("Arial", style='B', size=14)
-    pdf.cell(200, 10, f"Main Topic: {topical_map['Main Topic']}", ln=True)
-    pdf.set_font("Arial", size=12)
-    
-    for subtopic, keywords in topical_map["Subtopics"].items():
-        pdf.ln(5)
-        pdf.set_font("Arial", style='B', size=12)
-        pdf.cell(200, 10, f"{subtopic}", ln=True)
-        pdf.set_font("Arial", size=11)
-        pdf.multi_cell(0, 8, f"Keywords: {', '.join(keywords)}")
-    
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    pdf.output(temp_file.name)
-    return temp_file.name
-
 # Run if User Clicks 'Generate SEO Strategy'
 if st.button("🚀 Generate SEO Strategy"):
     if website_url and main_keyword and competitor_url and selected_objectives:
         website_topics = extract_topics(website_url)
         topical_map = generate_topical_map(website_topics, competitor_url, main_keyword, selected_objectives)
-        if topical_map:
+        if topical_map and topical_map["Subtopics"]:
             net = create_interactive_graph(topical_map)
-            pdf_file = generate_pdf(topical_map, website_url, main_keyword, selected_objectives)
-            
-            st.success("✅ SEO Strategy Generated!")
-            st.subheader("📊 Interactive SEO Topical Map:")
-            net.show("topical_map.html")
-            st.markdown("[Click here to view the SEO Topical Map](topical_map.html)")
-            
-            st.download_button("📥 Download SEO Strategy PDF", open(pdf_file, "rb"), "SEO_Strategy.pdf", "application/pdf")
+            if net:
+                st.success("✅ SEO Strategy Generated!")
+                st.subheader("📊 Interactive SEO Topical Map:")
+                net.show("topical_map.html")
+                st.markdown("[Click here to view the SEO Topical Map](topical_map.html)")
+            else:
+                st.error("❌ Failed to generate SEO topical map.")
         else:
             st.error("❌ Failed to generate SEO strategy. Please try again.")
     else:
