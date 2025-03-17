@@ -48,36 +48,46 @@ def extract_topics(url):
 
 # Function to Generate SEO Topical Map
 def generate_topical_map(website_topics, competitor_url, main_keyword, objectives):
-    """Generates an SEO topical map based on competitor analysis and SEO objectives."""
+    """Generates an in-depth SEO topical map based on competitor analysis and SEO objectives."""
     prompt = f"""
     Analyze the following website topics: {website_topics}
     Competitor URL: {competitor_url}
     Main Keyword: {main_keyword}
     SEO Objectives: {objectives}
     
-    Generate a structured SEO topical map with:
+    Generate an SEO strategy for ranking in search engines. Provide:
     - A main topic
-    - 4-6 subtopics
+    - 4-6 detailed subtopics
     - 3-5 keywords per subtopic
-    - Internal linking recommendations
-    - A brief content strategy for each subtopic
+    - **For each subtopic, generate a structured SEO content plan including:**
+      - Page Title (H1)
+      - Meta Description
+      - Recommended Word Count
+      - H2 and H3 Headings
+      - Internal Linking Recommendations
+      - Detailed Content Outline (with bullet points)
 
-    Return a JSON response like this:
+    Return a structured JSON like this:
     {{
         "Main Topic": "{main_keyword}",
         "Subtopics": {{
             "Subtopic 1": {{
                 "keywords": ["Keyword 1", "Keyword 2"],
-                "content": "Brief content strategy for this subtopic."
-            }},
-            "Subtopic 2": {{
-                "keywords": ["Keyword 3", "Keyword 4"],
-                "content": "Another content strategy suggestion."
+                "page_title": "Optimized H1 Title for SEO",
+                "meta_description": "Engaging description for SEO rankings.",
+                "word_count": 1200,
+                "headings": ["H2 Title 1", "H2 Title 2", "H3 Subsection 1"],
+                "internal_links": ["Relevant Page 1", "Relevant Page 2"],
+                "content_outline": [
+                    "Introduction covering the topic.",
+                    "Main points to discuss under each heading.",
+                    "Final Call-to-Action to engage users."
+                ]
             }}
         }}
     }}
     """
-    
+
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
@@ -93,68 +103,24 @@ def generate_topical_map(website_topics, competitor_url, main_keyword, objective
         st.error(f"❌ Error parsing AI response: {e}")
         return {"Main Topic": main_keyword, "Subtopics": {}}
 
-# Function to Create and Display SEO Topical Map
-def display_graph(topical_map):
-    """Displays an SEO topical map using Matplotlib inside the Streamlit app."""
-    if not topical_map or "Subtopics" not in topical_map or not topical_map["Subtopics"]:
-        st.error("❌ No valid subtopics available. Try again.")
-        return
-    
-    G = nx.DiGraph()
-    main_topic = topical_map["Main Topic"]
-    G.add_node(main_topic)
-    
-    for subtopic, data in topical_map["Subtopics"].items():
-        G.add_node(subtopic)
-        G.add_edge(main_topic, subtopic)
-        for keyword in data["keywords"]:
-            G.add_node(keyword)
-            G.add_edge(subtopic, keyword)
-    
-    plt.figure(figsize=(10, 6))
-    pos = nx.spring_layout(G)
-    nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=3000, font_size=10)
-    st.pyplot(plt)
-
-# Function to Generate and Display the Content Strategy
+# Function to Display SEO Content Strategy
 def display_content_strategy(topical_map):
-    """Displays the AI-generated content strategy for each subtopic."""
+    """Displays the detailed SEO content strategy for each subtopic."""
     st.subheader("📄 SEO Content Strategy:")
     for subtopic, data in topical_map["Subtopics"].items():
         st.markdown(f"### 🔹 {subtopic}")
-        st.write(f"**Keywords:** {', '.join(data['keywords'])}")
-        st.write(f"**Content Strategy:** {data['content']}")
-        st.markdown("---")
+        st.write(f"**📌 Keywords:** {', '.join(data['keywords'])}")
+        st.write(f"**🏷️ Page Title (H1):** {data['page_title']}")
+        st.write(f"**📝 Meta Description:** {data['meta_description']}")
+        st.write(f"**🔢 Recommended Word Count:** {data['word_count']} words")
+        st.write(f"**📖 Suggested Headings:** {', '.join(data['headings'])}")
+        st.write(f"**🔗 Internal Links:** {', '.join(data['internal_links'])}")
+        
+        st.write("**📝 Content Outline:**")
+        for bullet in data["content_outline"]:
+            st.markdown(f"- {bullet}")
 
-# Function to Generate PDF of Content Strategy
-def generate_pdf(topical_map):
-    """Creates a downloadable PDF with the SEO content strategy."""
-    pdf = FPDF()
-    pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-    pdf.set_font("Arial", style='B', size=16)
-    pdf.cell(200, 10, "SEO Content Strategy Document", ln=True, align='C')
-    
-    pdf.set_font("Arial", size=12)
-    pdf.ln(10)
-    pdf.cell(200, 10, f"Main Keyword: {topical_map['Main Topic']}", ln=True)
-    
-    pdf.ln(10)
-    pdf.set_font("Arial", style='B', size=14)
-    pdf.cell(200, 10, "Content Strategy", ln=True)
-    
-    pdf.set_font("Arial", size=12)
-    for subtopic, data in topical_map["Subtopics"].items():
-        pdf.ln(5)
-        pdf.set_font("Arial", style='B', size=12)
-        pdf.cell(200, 10, f"{subtopic}", ln=True)
-        pdf.set_font("Arial", size=11)
-        pdf.multi_cell(0, 8, f"Keywords: {', '.join(data['keywords'])}")
-        pdf.multi_cell(0, 8, f"Content Strategy: {data['content']}")
-    
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    pdf.output(temp_file.name)
-    return temp_file.name
+        st.markdown("---")
 
 # Run if User Clicks 'Generate SEO Strategy'
 if st.button("🚀 Generate SEO Strategy"):
@@ -163,13 +129,7 @@ if st.button("🚀 Generate SEO Strategy"):
         topical_map = generate_topical_map(website_topics, competitor_url, main_keyword, selected_objectives)
         if topical_map and topical_map["Subtopics"]:
             st.success("✅ SEO Strategy Generated!")
-            st.subheader("📊 Interactive SEO Topical Map:")
-            display_graph(topical_map)
             display_content_strategy(topical_map)
-
-            pdf_file = generate_pdf(topical_map)
-            st.download_button("📥 Download SEO Strategy PDF", open(pdf_file, "rb"), "SEO_Strategy.pdf", "application/pdf")
-
         else:
             st.error("❌ Failed to generate SEO strategy. Please try again.")
     else:
