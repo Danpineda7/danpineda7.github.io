@@ -8,33 +8,80 @@
     <meta name="keywords" content="ad fatigue, psychology, Google Ads, GrossiWeb, AI, A/B testing, creative rotation">
     <link rel="stylesheet" href="styles.css">
     <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
         .above-the-fold {
             position: relative;
-            height: 500px;
+            height: 600px;
             background: url('header.png') no-repeat center center/cover;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-start;
             justify-content: center;
-            text-align: center;
             color: white;
-            margin-bottom: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
         }
         .above-the-fold h1 {
-            font-size: 3em;
+            font-size: 3.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0 0 20px 0;
+            max-width: 70%;
+        }
+        .above-the-fold h2 {
+            font-size: 1.8em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            margin: 0;
+            max-width: 70%;
+            font-weight: normal;
         }
         .blog-post {
-            max-width: 800px;
+            max-width: 1000px; /* Increased width for better space usage */
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }
-        .blog-post h2 { font-size: 1.8em; margin-top: 30px; }
-        .blog-post p { font-size: 1.1em; line-height: 1.6; }
-        .blog-post img { max-width: 100%; height: auto; margin: 20px 0; }
-        .blog-post ul { margin: 10px 0; padding-left: 20px; }
-        .blog-post li { margin-bottom: 10px; }
-        .image-fallback { color: red; font-style: italic; }
-        footer img { width: 100%; height: auto; }
+        .blog-post h2 {
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        .blog-post h3 {
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .blog-post p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .blog-post img {
+            max-width: 100%;
+            height: auto;
+            margin: 30px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .blog-post ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        .blog-post li {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        .image-fallback {
+            color: red;
+            font-style: italic;
+        }
+        footer img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -55,10 +102,10 @@
 
     <section class="above-the-fold">
         <h1>Why You’re Not Clicking: The Psychology Behind Ad Fatigue</h1>
+        <h2>Why Your Ads Might Be Getting Ignored (and What to Do About It)</h2>
     </section>
 
     <main class="blog-post">
-        <h2>Why Your Ads Might Be Getting Ignored (and What to Do About It)</h2>
         <p>Ever feel like your ads just aren’t landing the way they used to? The targeting is solid, the copy sounds right, and your offer makes sense — but clicks are slowing down. Sound familiar?</p>
         <p>You’re likely seeing what happens when your audience starts to tune out. Not because your message is wrong — but because they’ve seen it too many times.</p>
 
